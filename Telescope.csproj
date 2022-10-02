@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bencodex" Version="0.4.0" />
+    <PackageReference Include="Cocona.Lite" Version="2.0.3" />
+    <PackageReference Include="Libplanet" Version="0.40.3" />
+    <PackageReference Include="Libplanet.RocksDBStore" Version="0.40.3" />
+    <PackageReference Include="Terminal.Gui" Version="1.8.2" />
+  </ItemGroup>
+
+</Project>
