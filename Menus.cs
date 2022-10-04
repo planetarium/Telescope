@@ -5,10 +5,13 @@ namespace Telescope
 {
     public class Menus
     {
-        private const int SearchFieldWidth = 60;
+        private const int SearchFieldWidth = 80;
         private const int SearchDialogWidth = SearchFieldWidth + 2;
         // Accounts for top, bottom borders and margins, search text and search box, and button
         private const int SearchDialogHeight = 7;
+        private const int InspectFieldWidth = 80;
+        private const int InspectDialogWidth = InspectFieldWidth + 2;
+        private const int InspectDialogHeight = 16;
 
         public Menus(Views views)
         {
@@ -27,6 +30,7 @@ namespace Telescope
             {
                 CreateFileMenuBarItem(),
                 CreateSearchMenuBarItem(),
+                CreateInspectMenuBarItem(),
             });
         }
 
@@ -166,6 +170,88 @@ namespace Telescope
                 _ = MessageBox.ErrorQuery(0, 0, "Error", $"Something went wrong: {e.GetType()}", "Ok");
             }
 
+            Application.RequestStop();
+        }
+
+        private MenuBarItem CreateInspectMenuBarItem()
+        {
+            return new MenuBarItem("_Inspect", "", () =>
+            {
+                var selectedIndex = Views.BlockChainView.SelectedItem;
+                var block = Views.BlockChain[selectedIndex] is { } obj
+                    ? (WrappedBlock)obj
+                    : throw new NullReferenceException("Failed to retrieve the selected block.");
+
+                var blockIndexLabel = new Label("Block Index:")
+                {
+                    X = 1,
+                    Y = 1,
+                };
+                var blockIndexValue = new Label(block.Index)
+                {
+                    X = 1,
+                    Y = Pos.Top(blockIndexLabel) + 1,
+                };
+                var blockHashLabel = new Label("Block Hash:")
+                {
+                    X = 1,
+                    Y = Pos.Top(blockIndexValue) + 2,
+                };
+                var blockHashValue = new Label(block.Hash)
+                {
+                    X = 1,
+                    Y = Pos.Top(blockHashLabel) + 1,
+                };
+                var stateRootHashLabel = new Label("State Root Hash:")
+                {
+                    X = 1,
+                    Y = Pos.Top(blockHashValue) + 2,
+                };
+                var stateRootHashValue = new Label(block.StateRootHash)
+                {
+                    X = 1,
+                    Y = Pos.Top(stateRootHashLabel) + 1,
+                };
+                var addressLabel = new Label("Address:")
+                {
+                    X = 1,
+                    Y = Pos.Top(stateRootHashValue) + 2,
+                };
+                var addressValue = new TextField("")
+                {
+                    X = 1,
+                    Y = Pos.Top(addressLabel) + 1,
+                    Width = SearchFieldWidth,
+                };
+                var button = new Button("_Inspect");
+
+                addressValue.KeyDown += (keyEventArgs) =>
+                {
+                    if (keyEventArgs.KeyEvent.Key is Key.Enter)
+                    {
+                        InspectAction(block, addressValue.Text.ToString() ?? string.Empty);
+                    }
+                };
+
+                button.Clicked += () => InspectAction(block, addressValue.Text.ToString() ?? string.Empty);
+
+                var dialog = new Dialog("Inspect", InspectDialogWidth, InspectDialogHeight);
+                dialog.Add(blockIndexLabel);
+                dialog.Add(blockIndexValue);
+                dialog.Add(blockHashLabel);
+                dialog.Add(blockHashValue);
+                dialog.Add(stateRootHashLabel);
+                dialog.Add(stateRootHashValue);
+                dialog.Add(addressLabel);
+                dialog.Add(addressValue);
+                dialog.AddButton(button);
+                Application.Run(dialog);
+            });
+        }
+
+        private void InspectAction(WrappedBlock block, string address)
+        {
+            var state = Views.BlockChain.GetState(block.Hash, address);
             Application.RequestStop();
         }
     }

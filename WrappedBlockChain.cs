@@ -1,6 +1,8 @@
 using System.Collections;
+using Libplanet;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
+using Bencodex;
 
 namespace Telescope
 {
@@ -70,5 +72,10 @@ namespace Telescope
         public IEnumerator<WrappedBlock> GetEnumerator() => throw new NotImplementedException("Enumerating is not allowed.");
 
         IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException("Enumerating is not allowed.");
+
+        public Bencodex.Types.IValue GetState(string hash, string address)
+        {
+            return _blockChain.GetState(new Address(address), new BlockHash(ByteUtil.ParseHex(hash)));
+        }
     }
 }
