@@ -45,5 +45,7 @@ namespace Telescope
 
             return true;
         }
+
+        public WrappedBlockChain BlockChain => _blockChain;
     }
 }
