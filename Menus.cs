@@ -1,15 +1,14 @@
 using Libplanet;
-using Libplanet.Blocks;
 using Terminal.Gui;
 
 namespace Telescope
 {
     public class Menus
     {
-        private static int SearchFieldWidth = 40;
-        private static int SearchDialogWidth = SearchFieldWidth + 2;
+        private const int SearchFieldWidth = 60;
+        private const int SearchDialogWidth = SearchFieldWidth + 2;
         // Accounts for top, bottom borders and margins, search text and search box, and button
-        private static int SearchDialogHeight = 7;
+        private const int SearchDialogHeight = 7;
 
         public Menus(Views views)
         {
@@ -71,17 +70,17 @@ namespace Telescope
                     Y = Pos.Top(searchText) + 1,
                     Width = SearchFieldWidth,
                 };
-                var button = new Button("Search");
+                var button = new Button("_Search");
 
                 searchValue.KeyDown += (keyEventArgs) =>
                 {
                     if (keyEventArgs.KeyEvent.Key is Key.Enter)
                     {
-                        IndexSearchAction(searchValue.Text.ToString());
+                        IndexSearchAction(searchValue.Text.ToString() ?? string.Empty);
                     }
                 };
 
-                button.Clicked += () => IndexSearchAction(searchValue.Text.ToString());
+                button.Clicked += () => IndexSearchAction(searchValue.Text.ToString() ?? string.Empty);
 
                 var dialog = new Dialog("Index Search", SearchDialogWidth, SearchDialogHeight);
                 dialog.Add(searchText);
@@ -106,17 +105,17 @@ namespace Telescope
                     Y = Pos.Top(searchText) + 1,
                     Width = SearchFieldWidth,
                 };
-                var button = new Button("Search");
+                var button = new Button("_Search");
 
                 searchValue.KeyDown += (keyEventArgs) =>
                 {
                     if (keyEventArgs.KeyEvent.Key is Key.Enter)
                     {
-                        HashSearchAction(searchValue.Text.ToString());
+                        HashSearchAction(searchValue.Text.ToString() ?? string.Empty);
                     }
                 };
 
-                button.Clicked += () => HashSearchAction(searchValue.Text.ToString());
+                button.Clicked += () => HashSearchAction(searchValue.Text.ToString() ?? string.Empty);
 
                 var dialog = new Dialog("Hash Search", SearchDialogWidth, SearchDialogHeight);
                 dialog.Add(searchText);
@@ -126,7 +125,7 @@ namespace Telescope
             });
         }
 
-        private void IndexSearchAction(string? searchIndex)
+        private void IndexSearchAction(string searchIndex)
         {
             var result = Int64.TryParse(searchIndex, out long index);
             if (result)
@@ -151,27 +150,20 @@ namespace Telescope
             Application.RequestStop();
         }
 
-        private void HashSearchAction(string? searchHash)
+        private void HashSearchAction(string searchHash)
         {
-            if (searchHash is { } hash)
+            try
             {
-                try
-                {
-                    var block = Views.BlockChainView.BlockChain[ByteUtil.ParseHex(hash)];
-                    var index = block.Block.Index;
-                    Views.BlockChainView.SelectedItem = (int)index;
-                    Views.BlockChainView.TopItem = Views.BlockChainView.SelectedItem;
-                    Views.BlockChainView.SetFocus();
-                    Views.BlockChainView.OnOpenSelectedItem();
-                }
-                catch (Exception e)
-                {
-                    _ = MessageBox.ErrorQuery(0, 0, "Error", $"Something went wrong: {e.GetType()}", "Ok");
-                }
+                var block = Views.BlockChain[ByteUtil.ParseHex(searchHash)];
+                var index = block.Block.Index;
+                Views.BlockChainView.SelectedItem = (int)index;
+                Views.BlockChainView.TopItem = Views.BlockChainView.SelectedItem;
+                Views.BlockChainView.SetFocus();
+                Views.BlockChainView.OnOpenSelectedItem();
             }
-            else
+            catch (Exception e)
             {
-                MessageBox.ErrorQuery(0, 0, "Error", "Please enter a valid hash", "Ok");
+                _ = MessageBox.ErrorQuery(0, 0, "Error", $"Something went wrong: {e.GetType()}", "Ok");
             }
 
             Application.RequestStop();
