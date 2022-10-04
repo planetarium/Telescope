@@ -1,5 +1,6 @@
 using System.Collections;
 using Libplanet.Blockchain;
+using Libplanet.Blocks;
 
 namespace Telescope
 {
@@ -26,6 +27,18 @@ namespace Telescope
             get
             {
                 return new WrappedBlock(_blockChain[index]);
+            }
+            set
+            {
+                throw new NotImplementedException("Setting is not allowed.");
+            }
+        }
+
+        public WrappedBlock this[byte[] blockHash]
+        {
+            get
+            {
+                return new WrappedBlock(_blockChain[new BlockHash(blockHash)]);
             }
             set
             {

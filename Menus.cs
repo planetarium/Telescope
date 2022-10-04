@@ -1,3 +1,5 @@
+using Libplanet;
+using Libplanet.Blocks;
 using Terminal.Gui;
 
 namespace Telescope
@@ -50,6 +52,7 @@ namespace Telescope
             return new MenuBarItem("_Search", new MenuItem[]
             {
                 CreateSearchIndexMenuItem(),
+                CreateSearchHashMenuItem(),
             });
         }
 
@@ -88,6 +91,41 @@ namespace Telescope
             });
         }
 
+        private MenuItem CreateSearchHashMenuItem()
+        {
+            return new MenuItem("_Hash", "", () =>
+            {
+                var searchText = new Label("Hash:")
+                {
+                    X = 1,
+                    Y = 1,
+                };
+                var searchValue = new TextField("")
+                {
+                    X = Pos.Left(searchText),
+                    Y = Pos.Top(searchText) + 1,
+                    Width = SearchFieldWidth,
+                };
+                var button = new Button("Search");
+
+                searchValue.KeyDown += (keyEventArgs) =>
+                {
+                    if (keyEventArgs.KeyEvent.Key is Key.Enter)
+                    {
+                        HashSearchAction(searchValue.Text.ToString());
+                    }
+                };
+
+                button.Clicked += () => HashSearchAction(searchValue.Text.ToString());
+
+                var dialog = new Dialog("Hash Search", SearchDialogWidth, SearchDialogHeight);
+                dialog.Add(searchText);
+                dialog.Add(searchValue);
+                dialog.AddButton(button);
+                Application.Run(dialog);
+            });
+        }
+
         private void IndexSearchAction(string? searchIndex)
         {
             var result = Int64.TryParse(searchIndex, out long index);
@@ -108,6 +146,32 @@ namespace Telescope
             else
             {
                 MessageBox.ErrorQuery(0, 0, "Error", "Please enter an integer", "Ok");
+            }
+
+            Application.RequestStop();
+        }
+
+        private void HashSearchAction(string? searchHash)
+        {
+            if (searchHash is { } hash)
+            {
+                try
+                {
+                    var block = Views.BlockChainView.BlockChain[ByteUtil.ParseHex(hash)];
+                    var index = block.Block.Index;
+                    Views.BlockChainView.SelectedItem = (int)index;
+                    Views.BlockChainView.TopItem = Views.BlockChainView.SelectedItem;
+                    Views.BlockChainView.SetFocus();
+                    Views.BlockChainView.OnOpenSelectedItem();
+                }
+                catch (Exception e)
+                {
+                    _ = MessageBox.ErrorQuery(0, 0, "Error", $"Something went wrong: {e.GetType()}", "Ok");
+                }
+            }
+            else
+            {
+                MessageBox.ErrorQuery(0, 0, "Error", "Please enter a valid hash", "Ok");
             }
 
             Application.RequestStop();
