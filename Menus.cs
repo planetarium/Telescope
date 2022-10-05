@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Libplanet;
 using Terminal.Gui;
 
@@ -251,8 +252,78 @@ namespace Telescope
 
         private void InspectAction(WrappedBlock block, string address)
         {
-            var state = Views.BlockChain.GetState(block.Hash, address);
+            try
+            {
+                var state = Views.BlockChain.GetState(block.Hash, address);
+                StateDialog(state);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Query("State", $"Failed to fetch state: {e.GetType()}", "Ok");
+                Console.WriteLine(e);
+            }
+
             Application.RequestStop();
+        }
+
+        private void StateDialog(Bencodex.Types.IValue state)
+        {
+            var dialog = new Dialog("State");
+
+            var textView = new TextView()
+            {
+                X = 0,
+                Y = 0,
+                Width = Dim.Fill(),
+                Height = Dim.Fill() - 1, // Buttons take up one line
+                WordWrap = true,
+                ReadOnly = true, // Disable editing
+
+                Text = FormattedState(state),
+            };
+            dialog.Add(textView);
+
+            var closeButton = new Button("_Close");
+            closeButton.Clicked += () => Application.RequestStop();
+            var formattedButton = new Button("_Formatted");
+            formattedButton.Clicked += () =>
+            {
+                textView.Text = FormattedState(state);
+            };
+            var rawButton = new Button("_Raw");
+            rawButton.Clicked += () =>
+            {
+                textView.Text = RawState(state);
+            };
+            var copyButton = new Button("Cop_y");
+            copyButton.Clicked += () =>
+            {
+                Clipboard.Contents = textView.Text;
+                MessageBox.Query("Copy", "Content copied to clipboard.", "_Close");
+            };
+
+            dialog.AddButton(closeButton);
+            dialog.AddButton(formattedButton);
+            dialog.AddButton(rawButton);
+            dialog.AddButton(copyButton);
+            closeButton.SetFocus();
+
+            Application.Run(dialog);
+        }
+
+        // FIXME: Use pre-compiled regex for optimization.
+        private string FormattedState(Bencodex.Types.IValue state)
+        {
+            string formatted = RawState(state);
+            formatted = Regex.Replace(formatted, @"^Bencodex\S* ", ""); // Remove type description
+            formatted = Regex.Replace(formatted, " b\"", " \""); // Remove byte string prefix
+            formatted = Regex.Replace(formatted, @"\\x", ""); // Convert to more readable hex form
+            return formatted;
+        }
+
+        private string RawState(Bencodex.Types.IValue state)
+        {
+            return state.ToString() ?? "null";
         }
     }
 }
