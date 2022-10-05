@@ -124,7 +124,7 @@ namespace Telescope
         // FIXME: Use pre-compiled regex for optimization.
         private static string FormattedAction(IAction action)
         {
-            string formatted = action.PlainValue.ToString() is string text ? text : "null";
+            string formatted = action.PlainValue.ToString() ?? "null";
             formatted = Regex.Replace(formatted, @"^Bencodex\S* ", "  "); // Remove type description; spacing
             formatted = Regex.Replace(formatted, "\n", "\n  "); // Spacing
             formatted = Regex.Replace(formatted, " b\"", " \""); // Remove byte string prefix
