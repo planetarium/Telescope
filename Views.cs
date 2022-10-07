@@ -71,10 +71,14 @@ namespace Telescope
         {
             const string indexHeader = "Index";
             const string hashHeader = "Hash";
+            const string minerHeader = "Miner";
+            const string transactionsCountHeader = "Txs";
 
             return new Label(
                 $"{Utils.ToFixedWidth(indexHeader, BlockChainView.IndexPaddingSize)} " +
-                $"{hashHeader}");
+                $"{Utils.ToFixedWidth(hashHeader, BlockChainView.HashPaddingSize)} " +
+                $"{Utils.ToFixedWidth(minerHeader, BlockChainView.MinerPaddingSize)} " +
+                $"{transactionsCountHeader}");
         }
 
         private BlockChainView CreateBlockChainView(WrappedBlockChain blockChain, BlockView blockView, TransactionsView transactionsView)

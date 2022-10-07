@@ -22,7 +22,7 @@ namespace Telescope
         public const int StateRootHashIndex = 9;
         public const int SignatureIndex = 10;
 
-        private const string TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
+        private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ff";
         private Block<MockAction> _block;
 
         public WrappedBlock(Block<MockAction> block)
@@ -45,7 +45,9 @@ namespace Telescope
             {
                 return
                     $"{Utils.ToFixedWidth(Index, BlockChainView.IndexPaddingSize)} " +
-                    $"{Block.Hash}";
+                    $"{Utils.ToFixedWidth(Hash, BlockChainView.HashPaddingSize)} " +
+                    $"{Utils.ToFixedWidth(Miner, BlockChainView.MinerPaddingSize)} " +
+                    $"{TransactionsCount}";
             }
         }
 
