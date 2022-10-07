@@ -3,6 +3,7 @@ using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
+using Telescope.Gui;
 using Terminal.Gui;
 
 namespace Telescope

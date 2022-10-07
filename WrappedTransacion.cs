@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Tx;
+using Telescope.Gui;
 
 namespace Telescope
 {

@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using Libplanet;
 using Terminal.Gui;
 
-namespace Telescope
+namespace Telescope.Gui
 {
     public class Menus
     {
