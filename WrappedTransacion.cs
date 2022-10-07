@@ -12,7 +12,7 @@ namespace Telescope
     /// </summary>
     public class WrappedTransaction
     {
-        private const string TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
+        private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ff";
         private Transaction<MockAction> _tx;
 
         public WrappedTransaction(Transaction<MockAction> tx)
@@ -83,7 +83,7 @@ namespace Telescope
                 {
                     return
                         "\n[\n" +
-                        String.Join(",\n", Tx.UpdatedAddresses.Select(address => $"  {address.ToString()}")) +
+                        String.Join(",\n", Tx.UpdatedAddresses.Select(address => $"  \"{address.ToString()}\"")) +
                         "\n]";
                 }
             }
