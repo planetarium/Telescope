@@ -56,7 +56,7 @@ namespace Telescope.Gui
         {
             var dialog = new Dialog(title)
             {
-                Width = Dim.Fill(),
+                Width = Dim.Fill() - 4, // Some margins
                 Height = 4, // Accounts for boarders, buttons, and content
             };
             var content = new TextView()

@@ -11,17 +11,18 @@ namespace Telescope
     /// </summary>
     public class WrappedBlock
     {
-        public const int IndexItemIndex = 0;
-        public const int HashItemIndex = 1;
-        public const int TimestampItemIndex = 2;
-        public const int MinerItemIndex = 3;
-        public const int PublicKeyIndex = 4;
-        public const int TxHashIndex = 5;
-        public const int NonceIndex = 6;
-        public const int PreEvaluationHashIndex = 7;
-        public const int TransactionsCountIndex = 8;
-        public const int StateRootHashIndex = 9;
-        public const int SignatureIndex = 10;
+        public const int ProtocolVersionItemIndex = 0;
+        public const int IndexItemIndex = 1;
+        public const int HashItemIndex = 2;
+        public const int TimestampItemIndex = 3;
+        public const int MinerItemIndex = 4;
+        public const int PublicKeyIndex = 5;
+        public const int TxHashIndex = 6;
+        public const int NonceIndex = 7;
+        public const int PreEvaluationHashIndex = 8;
+        public const int TransactionsCountIndex = 9;
+        public const int StateRootHashIndex = 10;
+        public const int SignatureIndex = 11;
 
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ff";
         private Block<MockAction> _block;
@@ -59,6 +60,11 @@ namespace Telescope
                 List<string> lines = new List<string>();
                 string label;
                 string value; // Just to make it easier to copy-paste repeated code
+
+                label = "Protocol Version:";
+                value = ProtocolVersion;
+                lines.Add(
+                    $"{Utils.ToFixedWidth(label, BlockView.LabelPaddingSize)} {value}");
                 label = "Index:";
                 value = Index;
                 lines.Add(
@@ -106,6 +112,8 @@ namespace Telescope
                 return lines;
             }
         }
+
+        public string ProtocolVersion => Block.ProtocolVersion.ToString();
 
         public string Index => Block.Index.ToString();
 
