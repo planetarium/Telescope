@@ -31,19 +31,19 @@ namespace Telescope.Gui
             switch (SelectedItem)
             {
                 case WrappedBlock.HashItemIndex:
-                    CopyDialogAction("Hash", _block.Hash);
+                    CopyDialog("Hash", _block.Hash);
                     break;
                 case WrappedBlock.MinerItemIndex:
-                    CopyDialogAction("Miner", _block.Miner);
+                    CopyDialog("Miner", _block.Miner);
                     break;
                 case WrappedBlock.PublicKeyIndex:
-                    CopyDialogAction("Public Key", _block.PublicKey);
+                    CopyDialog("Public Key", _block.PublicKey);
                     break;
                 case WrappedBlock.StateRootHashIndex:
-                    CopyDialogAction("State Root Hash", _block.StateRootHash);
+                    CopyDialog("State Root Hash", _block.StateRootHash);
                     break;
                 case WrappedBlock.SignatureIndex:
-                    CopyDialogAction("Signautre", _block.Signature);
+                    CopyDialog("Signautre", _block.Signature);
                     break;
                 default:
                     break;
@@ -52,7 +52,7 @@ namespace Telescope.Gui
             return true;
         }
 
-        private void CopyDialogAction(string title, string value)
+        private void CopyDialog(string title, string value)
         {
             var dialog = new Dialog(title)
             {
@@ -75,6 +75,7 @@ namespace Telescope.Gui
             {
                 Clipboard.Contents = value;
                 MessageBox.Query("Copy", "Content copied to clipboard.", "_Close");
+                Application.RequestStop();
             };
 
             dialog.Add(content);
