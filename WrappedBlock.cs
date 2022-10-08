@@ -1,6 +1,7 @@
 using System.Globalization;
 using Libplanet;
 using Libplanet.Blocks;
+using Telescope.Gui;
 
 namespace Telescope
 {

@@ -1,6 +1,6 @@
 using Terminal.Gui;
 
-namespace Telescope
+namespace Telescope.Gui
 {
     public class Views
     {
