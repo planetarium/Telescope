@@ -69,19 +69,11 @@ namespace Telescope.Gui
 
         private Label CreateBlockChainViewHeader()
         {
-            const string indexHeader = "Index";
-            const string hashHeader = "Hash";
-            const string minerHeader = "Miner";
-            const string transactionsCountHeader = "Txs";
-
-            return new Label(
-                $"{Utils.ToFixedWidth(indexHeader, BlockChainView.IndexPaddingSize)} " +
-                $"{Utils.ToFixedWidth(hashHeader, BlockChainView.HashPaddingSize)} " +
-                $"{Utils.ToFixedWidth(minerHeader, BlockChainView.MinerPaddingSize)} " +
-                $"{transactionsCountHeader}");
+            return new Label(WrappedBlock.Header);
         }
 
-        private BlockChainView CreateBlockChainView(WrappedBlockChain blockChain, BlockView blockView, TransactionsView transactionsView)
+        private BlockChainView CreateBlockChainView(
+            WrappedBlockChain blockChain, BlockView blockView, TransactionsView transactionsView)
         {
             return new BlockChainView(blockChain, blockView, transactionsView)
             {
@@ -134,13 +126,7 @@ namespace Telescope.Gui
 
         private Label CreateTransactionsViewHeader()
         {
-            const string idHeader = "Id";
-            const string signerHeader = "Signer";
-            const string nonceHeader = "Nonce";
-            return new Label(
-                $"{Utils.ToFixedWidth(idHeader, TransactionsView.IdPaddingSize)} " +
-                $"{Utils.ToFixedWidth(signerHeader, TransactionsView.SignerPaddingSize)} " +
-                $"{nonceHeader}");
+            return new Label(WrappedTransaction.Header);
         }
 
         private TransactionsView CreateTransactionsView()

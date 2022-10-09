@@ -32,6 +32,19 @@ namespace Telescope
             _block = block;
         }
 
+        /// <summary>
+        /// Header section to match the <see cref="Summary"/> format in
+        /// a <see cref="BlockChainView"/>.  Not to be confused with
+        /// <see cref="BlockHeader"/>.
+        /// </summary>
+        public static string Header =>
+            String.Format(
+                "{0} {1} {2} {3}",
+                Utils.ToFixedWidth("Index", BlockChainView.IndexPaddingSize),
+                Utils.ToFixedWidth("Hash", BlockChainView.HashPaddingSize),
+                Utils.ToFixedWidth("Miner", BlockChainView.MinerPaddingSize),
+                "Txs");
+
         public Block<MockAction> Block => _block;
 
         public List<WrappedTransaction> Transactions => _block.Transactions.Select(tx => new WrappedTransaction(tx)).ToList();
@@ -41,17 +54,13 @@ namespace Telescope
         /// <summary>
         /// A short single line summarized representation of a <see cref="Block{T}"/> to be used as a list item.
         /// </summary>
-        public string Summary
-        {
-            get
-            {
-                return
-                    $"{Utils.ToFixedWidth(Index, BlockChainView.IndexPaddingSize)} " +
-                    $"{Utils.ToFixedWidth(Hash, BlockChainView.HashPaddingSize)} " +
-                    $"{Utils.ToFixedWidth(Miner, BlockChainView.MinerPaddingSize)} " +
-                    $"{TransactionsCount}";
-            }
-        }
+        public string Summary =>
+            String.Format(
+                "{0} {1} {2} {3}",
+                Utils.ToFixedWidth(Index, BlockChainView.IndexPaddingSize),
+                Utils.ToFixedWidth(Hash, BlockChainView.HashPaddingSize),
+                Utils.ToFixedWidth(Miner, BlockChainView.MinerPaddingSize),
+                TransactionsCount);
 
         public List<string> Detail
         {
