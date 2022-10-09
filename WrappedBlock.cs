@@ -42,7 +42,7 @@ namespace Telescope
                 "{0} {1} {2} {3}",
                 Utils.ToFixedWidth("Index", BlockChainView.IndexPaddingSize),
                 Utils.ToFixedWidth("Hash", BlockChainView.HashPaddingSize),
-                Utils.ToFixedWidth("Miner", BlockChainView.MinerPaddingSize),
+                Utils.ToFixedWidth("Miner", BlockChainView.AddressPaddingSize),
                 "Txs");
 
         public Block<MockAction> Block => _block;
@@ -59,7 +59,7 @@ namespace Telescope
                 "{0} {1} {2} {3}",
                 Utils.ToFixedWidth(Index, BlockChainView.IndexPaddingSize),
                 Utils.ToFixedWidth(Hash, BlockChainView.HashPaddingSize),
-                Utils.ToFixedWidth(Miner, BlockChainView.MinerPaddingSize),
+                Utils.ToFixedWidth(Miner, BlockChainView.AddressPaddingSize),
                 TransactionsCount);
 
         public List<string> Detail
