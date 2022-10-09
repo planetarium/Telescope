@@ -15,6 +15,40 @@ namespace Telescope.Gui
         private const int InspectDialogWidth = InspectFieldWidth + 2;
         private const int InspectDialogHeight = 16;
 
+        public static void CopyDialog(string title, string value)
+        {
+            var dialog = new Dialog(title)
+            {
+                Width = Dim.Fill() - 4, // Some margins
+                Height = 4, // Accounts for boarders, buttons, and content
+            };
+            var content = new TextView()
+            {
+                WordWrap = false,
+                ReadOnly = true,
+
+                Width = Dim.Fill(),
+                Height = 1, // Forces single line
+                Text = value,
+            };
+            var closeButton = new Button("_Close");
+            closeButton.Clicked += () => Application.RequestStop();
+            var copyButton = new Button("Cop_y");
+            copyButton.Clicked += () =>
+            {
+                Clipboard.Contents = value;
+                MessageBox.Query("Copy", "Content copied to clipboard.", "_Close");
+                Application.RequestStop();
+            };
+
+            dialog.Add(content);
+            dialog.AddButton(closeButton);
+            dialog.AddButton(copyButton);
+            closeButton.SetFocus();
+            Application.Run(dialog);
+            return;
+        }
+
         public static void SearchIndexDialog(Views views)
         {
             var searchText = new Label("Index:")
@@ -28,9 +62,12 @@ namespace Telescope.Gui
                 Y = Pos.Top(searchText) + 1,
                 Width = SearchFieldWidth,
             };
-            var button = new Button("_Search");
+            var closeButton = new Button("_Close");
+            closeButton.Clicked += () => Application.RequestStop();
+            var searchButton = new Button("_Search");
+            searchButton.Clicked += () => IndexSearchAction(views, searchValue.Text.ToString() ?? string.Empty);
 
-            searchValue.KeyDown += (keyEventArgs) =>
+            searchValue.KeyPress += (keyEventArgs) =>
             {
                 if (keyEventArgs.KeyEvent.Key is Key.Enter)
                 {
@@ -38,12 +75,12 @@ namespace Telescope.Gui
                 }
             };
 
-            button.Clicked += () => IndexSearchAction(views, searchValue.Text.ToString() ?? string.Empty);
-
             var dialog = new Dialog("Index Search", SearchDialogWidth, SearchDialogHeight);
             dialog.Add(searchText);
             dialog.Add(searchValue);
-            dialog.AddButton(button);
+            dialog.AddButton(closeButton);
+            dialog.AddButton(searchButton);
+            searchValue.SetFocus();
             Application.Run(dialog);
         }
 
@@ -60,9 +97,12 @@ namespace Telescope.Gui
                 Y = Pos.Top(searchText) + 1,
                 Width = SearchFieldWidth,
             };
-            var button = new Button("_Search");
+            var closeButton = new Button("_Close");
+            closeButton.Clicked += () => Application.RequestStop();
+            var searchButton = new Button("_Search");
+            searchButton.Clicked += () => HashSearchAction(views, searchValue.Text.ToString() ?? string.Empty);
 
-            searchValue.KeyDown += (keyEventArgs) =>
+            searchValue.KeyPress += (keyEventArgs) =>
             {
                 if (keyEventArgs.KeyEvent.Key is Key.Enter)
                 {
@@ -70,12 +110,12 @@ namespace Telescope.Gui
                 }
             };
 
-            button.Clicked += () => HashSearchAction(views, searchValue.Text.ToString() ?? string.Empty);
-
             var dialog = new Dialog("Hash Search", SearchDialogWidth, SearchDialogHeight);
             dialog.Add(searchText);
             dialog.Add(searchValue);
-            dialog.AddButton(button);
+            dialog.AddButton(closeButton);
+            dialog.AddButton(searchButton);
+            searchValue.SetFocus();
             Application.Run(dialog);
         }
 
@@ -127,7 +167,10 @@ namespace Telescope.Gui
                 Y = Pos.Top(addressLabel) + 1,
                 Width = SearchFieldWidth,
             };
-            var button = new Button("_Inspect");
+            var closeButton = new Button("_Close");
+            closeButton.Clicked += () => Application.RequestStop();
+            var inspectButton = new Button("_Inspect");
+            inspectButton.Clicked += () => InspectAction(views, block, addressValue.Text.ToString() ?? string.Empty);
 
             addressValue.KeyDown += (keyEventArgs) =>
             {
@@ -136,8 +179,6 @@ namespace Telescope.Gui
                     InspectAction(views, block, addressValue.Text.ToString() ?? string.Empty);
                 }
             };
-
-            button.Clicked += () => InspectAction(views, block, addressValue.Text.ToString() ?? string.Empty);
 
             var dialog = new Dialog("Inspect", InspectDialogWidth, InspectDialogHeight);
             dialog.Add(blockIndexLabel);
@@ -148,7 +189,9 @@ namespace Telescope.Gui
             dialog.Add(stateRootHashValue);
             dialog.Add(addressLabel);
             dialog.Add(addressValue);
-            dialog.AddButton(button);
+            dialog.AddButton(closeButton);
+            dialog.AddButton(inspectButton);
+            addressValue.SetFocus();
             Application.Run(dialog);
         }
 
