@@ -129,41 +129,80 @@ namespace Telescope.Gui
             Application.Run(dialog);
         }
 
-        public static void TransactionDialog(WrappedTransaction tx)
+        public static void TransactionDialog(WrappedBlock block, WrappedTransaction tx)
         {
             var dialog = new Dialog("Transaction");
 
-            var textView = new TextView()
+            var contextFrame = new FrameView("Context")
             {
                 X = 0,
                 Y = 0,
                 Width = Dim.Fill(),
+                Height = 4,
+            };
+            var contextHeader = new Label(
+                String.Format(
+                    "{0} {1} {2}",
+                    Utils.ToFixedWidth("Index", BlockChainView.IndexPaddingSize),
+                    Utils.ToFixedWidth("Hash", BlockChainView.HashPaddingSize),
+                    Utils.ToFixedWidth("Miner", BlockChainView.MinerPaddingSize)))
+            {
+                X = 0,
+                Y = 0,
+            };
+            var contextValue = new Label(
+                String.Format(
+                    "{0} {1} {2}",
+                    Utils.ToFixedWidth(block.Index, BlockChainView.IndexPaddingSize),
+                    Utils.ToFixedWidth(block.Hash, BlockChainView.HashPaddingSize),
+                    Utils.ToFixedWidth(block.Miner, BlockChainView.MinerPaddingSize)))
+            {
+                X = 0,
+                Y = 1,
+            };
+            contextFrame.Add(contextHeader);
+            contextFrame.Add(contextValue);
+
+            var contentFrame = new FrameView("Content")
+            {
+                X = 0,
+                Y = Pos.Bottom(contextFrame),
+                Width = Dim.Fill(),
                 Height = Dim.Fill() - 1, // Buttons take up one line
+            };
+            var contentValue = new TextView()
+            {
+                X = 0,
+                Y = 0,
+                Width = Dim.Fill(),
+                Height = Dim.Fill(),
                 WordWrap = true,
                 ReadOnly = true, // Disable editing
             };
+            contentFrame.Add(contentValue);
 
             var closeButton = new Button("_Close");
             closeButton.Clicked += () => dialog.RequestStop();
             var formattedButton = new Button("_Formatted");
             formattedButton.Clicked += () =>
             {
-                textView.Text = tx.Detail;
+                contentValue.Text = tx.Detail;
             };
             var rawButton = new Button("_Raw");
             rawButton.Clicked += () =>
             {
-                textView.Text = tx.Raw;
+                contentValue.Text = tx.Raw;
             };
             var copyButton = new Button("Cop_y");
             copyButton.Clicked += () =>
             {
-                Clipboard.Contents = textView.Text;
+                Clipboard.Contents = contentValue.Text;
                 MessageBox.Query("Copy", "Content copied to clipboard.", "_Close");
             };
 
-            textView.Text = tx.Detail;
-            dialog.Add(textView);
+            contentValue.Text = tx.Detail;
+            dialog.Add(contextFrame);
+            dialog.Add(contentFrame);
             dialog.AddButton(closeButton);
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);
@@ -178,10 +217,7 @@ namespace Telescope.Gui
             var dialog = new Dialog("Inspect", InspectDialogWidth, InspectDialogHeight);
 
             var inspected = false; // Flag to ignore multiple instructions.
-            var selectedIndex = views.BlockChainView.SelectedItem;
-            var block = views.BlockChain[selectedIndex] is { } obj
-                ? (WrappedBlock)obj
-                : throw new NullReferenceException("Failed to retrieve the selected block.");
+            var block = views.BlockChainView.OpenedBlock;
 
             var blockIndexLabel = new Label("Block Index:")
             {

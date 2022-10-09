@@ -11,6 +11,7 @@ namespace Telescope.Gui
         private WrappedBlockChain _blockChain;
         private BlockView _blockView;
         private TransactionsView _transactionsView;
+        private WrappedBlock _openedBlock;
 
         /// <summary>
         /// Creates a <see cref="BlockChainView"/> instance displaying a list of <see cref="WrappedBlock"/>s
@@ -25,6 +26,9 @@ namespace Telescope.Gui
             _blockChain = blockChain;
             _blockView = blockView;
             _transactionsView = transactionsView;
+            _openedBlock = blockChain[0] is WrappedBlock block
+                ? block
+                : throw new ArgumentException("Failed to load genesis block.");
 
             // NOTE: Using the raw explicit setter instead of calling base constructor
             // to bypass iterating over all indices.
@@ -35,17 +39,24 @@ namespace Telescope.Gui
         {
             if (_blockChain[SelectedItem] is WrappedBlock block)
             {
+                _openedBlock = block;
                 _blockView.Clear();
                 _blockView.SetSource(block);
                 _transactionsView.Clear();
-                _transactionsView.SetSource(block.Transactions);
+                _transactionsView.SetSource(block);
             }
             else
             {
-                throw new InvalidOperationException("Failed to retrieve selected block.");
+                throw new ArgumentException("Failed to load selected block.");
             }
 
             return true;
         }
+
+        /// <summary>
+        /// Currently opened <see cref="WrappedBlock"/>. Not to be confused
+        /// with <see cref="ListView.SelectedItem"/>.
+        /// </summary>
+        public WrappedBlock OpenedBlock => _openedBlock;
     }
 }
