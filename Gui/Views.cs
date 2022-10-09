@@ -109,7 +109,7 @@ namespace Telescope.Gui
             }
             else
             {
-                throw new ArgumentException("Could not load genesis block.");
+                throw new ArgumentException("Failed to load genesis block.");
             }
         }
 
@@ -133,7 +133,7 @@ namespace Telescope.Gui
         {
             if (BlockChain[0] is WrappedBlock genesis)
             {
-                return new TransactionsView(genesis.Transactions)
+                return new TransactionsView(genesis)
                 {
                     X = Pos.Percent(0),
                     Y = Pos.Percent(0) + 1, // Header takes up one line
@@ -143,7 +143,7 @@ namespace Telescope.Gui
             }
             else
             {
-                throw new ArgumentException("Could not load genesis block.");
+                throw new ArgumentException("Failed to load genesis block.");
             }
         }
     }

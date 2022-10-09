@@ -28,7 +28,7 @@ namespace Telescope.Gui
             _transactionsView = transactionsView;
             _openedBlock = blockChain[0] is WrappedBlock block
                 ? block
-                : throw new ArgumentException("Failed to load genesis block");
+                : throw new ArgumentException("Failed to load genesis block.");
 
             // NOTE: Using the raw explicit setter instead of calling base constructor
             // to bypass iterating over all indices.
@@ -43,11 +43,11 @@ namespace Telescope.Gui
                 _blockView.Clear();
                 _blockView.SetSource(block);
                 _transactionsView.Clear();
-                _transactionsView.SetSource(block.Transactions);
+                _transactionsView.SetSource(block);
             }
             else
             {
-                throw new InvalidOperationException("Failed load selected block.");
+                throw new ArgumentException("Failed to load selected block.");
             }
 
             return true;

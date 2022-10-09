@@ -8,25 +8,37 @@ namespace Telescope.Gui
         public const int SignerPaddingSize = 16;
         public const int LabelPaddingSize = 20;
 
+        private WrappedBlock _block;
         private List<WrappedTransaction> _txs;
 
-        public TransactionsView(List<WrappedTransaction> txs)
+        /// <summary>
+        /// Creates a <see cref="TransactionsView"/> instance displaying a list of
+        /// <see cref="WrappedTransaction"/>s from given <paramref name="block"/>.
+        /// </summary>
+        /// <remarks>
+        /// Note that a <see cref="WrappedBlock"/> is used instead of
+        /// a <see cref="List{T}"/> of <see cref="WrappedTransaction"/>s to
+        /// keep track of the context.
+        /// </remarks>
+        public TransactionsView(WrappedBlock block)
             : base()
         {
-            _txs = txs;
+            _block = block;
+            _txs = block.Transactions;
             SetSource(_txs);
         }
 
-        public void SetSource(List<WrappedTransaction> txs)
+        public void SetSource(WrappedBlock block)
         {
-            _txs = txs;
+            _block = block;
+            _txs = block.Transactions;
             base.SetSource(_txs);
         }
 
         public override bool OnOpenSelectedItem()
         {
             WrappedTransaction tx = _txs[SelectedItem];
-            Dialogs.TransactionDialog(tx);
+            Dialogs.TransactionDialog(_block, tx);
             return true;
         }
     }
