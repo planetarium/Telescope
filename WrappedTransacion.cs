@@ -26,18 +26,25 @@ namespace Telescope
         public override string ToString() => Summary;
 
         /// <summary>
+        /// Header section to match the <see cref="Summary"/> format in
+        /// a <see cref="TransactionsView"/>.
+        /// </summary>
+        public static string Header =>
+            String.Format(
+                "{0} {1} {2}",
+                Utils.ToFixedWidth("Id", TransactionsView.IdPaddingSize),
+                Utils.ToFixedWidth("Signer", TransactionsView.SignerPaddingSize),
+                "Nonce");
+
+        /// <summary>
         /// A short single line summarized representation of a <see cref="Transaction{T}"/> to be used as a list item.
         /// </summary>
-        public string Summary
-        {
-            get
-            {
-                return
-                    $"{Utils.ToFixedWidth(Id, TransactionsView.IdPaddingSize)} " +
-                    $"{Utils.ToFixedWidth(Signer, TransactionsView.SignerPaddingSize)} " +
-                    $"{Nonce}";
-            }
-        }
+        public string Summary =>
+            String.Format(
+                "{0} {1} {2}",
+                Utils.ToFixedWidth(Id, TransactionsView.IdPaddingSize),
+                Utils.ToFixedWidth(Signer, TransactionsView.SignerPaddingSize),
+                Nonce);
 
         public string Detail
         {

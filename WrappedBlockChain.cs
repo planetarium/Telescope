@@ -73,9 +73,12 @@ namespace Telescope
 
         IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException("Enumerating is not allowed.");
 
-        public Bencodex.Types.IValue GetState(string hash, string address)
+        public WrappedState GetState(string hash, string address)
         {
-            return _blockChain.GetState(new Address(address), new BlockHash(ByteUtil.ParseHex(hash)));
+            var state = _blockChain.GetState(new Address(address), new BlockHash(ByteUtil.ParseHex(hash)));
+            return state is { } s
+                ? new WrappedState(s)
+                : throw new NullReferenceException("Failed to fetch state.");
         }
     }
 }
