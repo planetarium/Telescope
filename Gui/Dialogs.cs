@@ -145,7 +145,7 @@ namespace Telescope.Gui
                     "{0} {1} {2}",
                     Utils.ToFixedWidth("Index", BlockChainView.IndexPaddingSize),
                     Utils.ToFixedWidth("Hash", BlockChainView.HashPaddingSize),
-                    Utils.ToFixedWidth("Miner", BlockChainView.MinerPaddingSize)))
+                    Utils.ToFixedWidth("Miner", BlockChainView.AddressPaddingSize)))
             {
                 X = 0,
                 Y = 0,
@@ -155,7 +155,7 @@ namespace Telescope.Gui
                     "{0} {1} {2}",
                     Utils.ToFixedWidth(block.Index, BlockChainView.IndexPaddingSize),
                     Utils.ToFixedWidth(block.Hash, BlockChainView.HashPaddingSize),
-                    Utils.ToFixedWidth(block.Miner, BlockChainView.MinerPaddingSize)))
+                    Utils.ToFixedWidth(block.Miner, BlockChainView.AddressPaddingSize)))
             {
                 X = 0,
                 Y = 1,
@@ -266,12 +266,9 @@ namespace Telescope.Gui
                 {
                     if (!inspected)
                     {
+                        inspected = true;
                         dialog.RequestStop();
                         StateDialog(views, block, addressValue.Text.ToString() ?? String.Empty);
-                    }
-                    else
-                    {
-                        inspected = true;
                     }
                 }
             };
@@ -282,12 +279,9 @@ namespace Telescope.Gui
             {
                 if (!inspected)
                 {
+                    inspected = true;
                     dialog.RequestStop();
                     StateDialog(views, block, addressValue.Text.ToString() ?? String.Empty);
-                }
-                else
-                {
-                    inspected = true;
                 }
             };
 
@@ -360,15 +354,57 @@ namespace Telescope.Gui
 
             var dialog = new Dialog("State");
 
-            var textView = new TextView()
+            var contextFrame = new FrameView("Context")
             {
                 X = 0,
                 Y = 0,
                 Width = Dim.Fill(),
+                Height = 4,
+            };
+            var contextHeader = new Label(
+                String.Format(
+                    "{0} {1} {2} {3} {4}",
+                    Utils.ToFixedWidth("Index", BlockChainView.IndexPaddingSize),
+                    Utils.ToFixedWidth("Hash", BlockChainView.HashPaddingSize),
+                    Utils.ToFixedWidth("Miner", BlockChainView.AddressPaddingSize),
+                    Utils.ToFixedWidth("State Root Hash", BlockChainView.HashPaddingSize),
+                    Utils.ToFixedWidth("Address", BlockChainView.AddressPaddingSize)))
+            {
+                X = 0,
+                Y = 0,
+            };
+            var contextValue = new Label(
+                String.Format(
+                    "{0} {1} {2} {3} {4}",
+                    Utils.ToFixedWidth(block.Index, BlockChainView.IndexPaddingSize),
+                    Utils.ToFixedWidth(block.Hash, BlockChainView.HashPaddingSize),
+                    Utils.ToFixedWidth(block.Miner, BlockChainView.AddressPaddingSize),
+                    Utils.ToFixedWidth(block.StateRootHash, BlockChainView.HashPaddingSize),
+                    Utils.ToFixedWidth(address, BlockChainView.AddressPaddingSize)))
+            {
+                X = 0,
+                Y = 1,
+            };
+            contextFrame.Add(contextHeader);
+            contextFrame.Add(contextValue);
+
+            var contentFrame = new FrameView("Content")
+            {
+                X = 0,
+                Y = Pos.Bottom(contextFrame),
+                Width = Dim.Fill(),
                 Height = Dim.Fill() - 1, // Buttons take up one line
+            };
+            var contentValue = new TextView()
+            {
+                X = 0,
+                Y = 0,
+                Width = Dim.Fill(),
+                Height = Dim.Fill(), // Buttons take up one line
                 WordWrap = true,
                 ReadOnly = true, // Disable editing
             };
+            contentFrame.Add(contentValue);
 
             var closeButton = new Button("_Close");
             closeButton.Clicked += () =>
@@ -378,22 +414,23 @@ namespace Telescope.Gui
             var formattedButton = new Button("_Formatted");
             formattedButton.Clicked += () =>
             {
-                textView.Text = state.Formatted;
+                contentValue.Text = state.Formatted;
             };
             var rawButton = new Button("_Raw");
             rawButton.Clicked += () =>
             {
-                textView.Text = state.Raw;
+                contentValue.Text = state.Raw;
             };
             var copyButton = new Button("Cop_y");
             copyButton.Clicked += () =>
             {
-                Clipboard.Contents = textView.Text;
+                Clipboard.Contents = contentValue.Text;
                 MessageBox.Query("Copy", "Content copied to clipboard.", "_Close");
             };
 
-            textView.Text = state.Formatted;
-            dialog.Add(textView);
+            contentValue.Text = state.Formatted;
+            dialog.Add(contextFrame);
+            dialog.Add(contentFrame);
             dialog.AddButton(closeButton);
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);

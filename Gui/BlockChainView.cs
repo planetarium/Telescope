@@ -6,7 +6,7 @@ namespace Telescope.Gui
     {
         public const int IndexPaddingSize = 8;
         public const int HashPaddingSize = 16;
-        public const int MinerPaddingSize = 16;
+        public const int AddressPaddingSize = 16;
 
         private WrappedBlockChain _blockChain;
         private BlockView _blockView;
