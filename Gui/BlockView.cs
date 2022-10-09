@@ -4,6 +4,15 @@ namespace Telescope.Gui
 {
     public class BlockView : ListView
     {
+        public static HashSet<int> SelectableIndices = new HashSet<int>
+        {
+            WrappedBlock.HashItemIndex,
+            WrappedBlock.MinerItemIndex,
+            WrappedBlock.PublicKeyIndex,
+            WrappedBlock.StateRootHashIndex,
+            WrappedBlock.SignatureIndex,
+        };
+
         public const int LabelPaddingSize = 20;
 
         private WrappedBlock _block;
@@ -22,6 +31,28 @@ namespace Telescope.Gui
         }
 
         /// <summary>
+        /// Grays out texts for non-selectable rows.
+        /// </summary>
+        public override void OnRowRender(ListViewRowEventArgs rowEventArgs)
+        {
+            // TODO: Check colors on other terminals.
+            if (!SelectableIndices.Contains(rowEventArgs.Row))
+            {
+                rowEventArgs.RowAttribute = SelectedItem == rowEventArgs.Row
+                    ? Terminal.Gui.Attribute.Make(
+                        foreground: Color.Black,
+                        background: Color.DarkGray)
+                    : Terminal.Gui.Attribute.Make(
+                        foreground: Color.Gray,
+                        background: Color.Blue);
+            }
+            else
+            {
+                base.OnRowRender(rowEventArgs);
+            }
+        }
+
+        /// <summary>
         /// Opens a <see cref="MessageBox"/> showing full hex string while also copying the
         /// said string to the <see cref="Clipboard"/> when an applicable item is selected.
         /// </summary>
@@ -31,60 +62,25 @@ namespace Telescope.Gui
             switch (SelectedItem)
             {
                 case WrappedBlock.HashItemIndex:
-                    CopyDialog("Hash", _block.Hash);
+                    Dialogs.CopyDialog("Hash", _block.Hash);
                     break;
                 case WrappedBlock.MinerItemIndex:
-                    CopyDialog("Miner", _block.Miner);
+                    Dialogs.CopyDialog("Miner", _block.Miner);
                     break;
                 case WrappedBlock.PublicKeyIndex:
-                    CopyDialog("Public Key", _block.PublicKey);
+                    Dialogs.CopyDialog("Public Key", _block.PublicKey);
                     break;
                 case WrappedBlock.StateRootHashIndex:
-                    CopyDialog("State Root Hash", _block.StateRootHash);
+                    Dialogs.CopyDialog("State Root Hash", _block.StateRootHash);
                     break;
                 case WrappedBlock.SignatureIndex:
-                    CopyDialog("Signautre", _block.Signature);
+                    Dialogs.CopyDialog("Signautre", _block.Signature);
                     break;
                 default:
                     break;
             }
 
             return true;
-        }
-
-        private void CopyDialog(string title, string value)
-        {
-            var dialog = new Dialog(title)
-            {
-                Width = Dim.Fill() - 4, // Some margins
-                Height = 4, // Accounts for boarders, buttons, and content
-            };
-            var content = new TextView()
-            {
-                WordWrap = false,
-                ReadOnly = true,
-
-                Width = Dim.Fill(),
-                Height = 1, // Forces single line
-                Text = value,
-            };
-            var closeButton = new Button("_Close");
-            closeButton.Clicked += () => Application.RequestStop();
-            var copyButton = new Button("Cop_y");
-            copyButton.Clicked += () =>
-            {
-                Clipboard.Contents = value;
-                MessageBox.Query("Copy", "Content copied to clipboard.", "_Close");
-                Application.RequestStop();
-            };
-
-            dialog.Add(content);
-            dialog.AddButton(closeButton);
-            dialog.AddButton(copyButton);
-            closeButton.SetFocus();
-
-            Application.Run(dialog);
-            return;
         }
     }
 }
