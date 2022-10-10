@@ -133,7 +133,7 @@ namespace Telescope.Gui
         {
             if (BlockChain[0] is WrappedBlock genesis)
             {
-                return new TransactionsView(genesis)
+                return new TransactionsView(this, genesis)
                 {
                     X = Pos.Percent(0),
                     Y = Pos.Percent(0) + 1, // Header takes up one line

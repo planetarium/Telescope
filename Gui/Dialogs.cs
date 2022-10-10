@@ -148,7 +148,7 @@ namespace Telescope.Gui
             Application.Run(dialog);
         }
 
-        public static void TransactionDialog(WrappedBlock block, WrappedTransaction tx)
+        public static void TransactionDialog(Views views, WrappedBlock block, WrappedTransaction tx)
         {
             var dialog = new Dialog("Transaction");
 
@@ -161,20 +161,22 @@ namespace Telescope.Gui
             };
             var contextHeader = new Label(
                 String.Format(
-                    "{0} {1} {2}",
+                    "{0} {1} {2} {3}",
                     Utils.ToFixedWidth("Index", BlockChainView.IndexPaddingSize),
                     Utils.ToFixedWidth("Hash", BlockChainView.HashPaddingSize),
-                    Utils.ToFixedWidth("Miner", BlockChainView.AddressPaddingSize)))
+                    Utils.ToFixedWidth("Miner", BlockChainView.AddressPaddingSize),
+                    Utils.ToFixedWidth("State Root Hash", BlockChainView.HashPaddingSize)))
             {
                 X = 0,
                 Y = 0,
             };
             var contextValue = new Label(
                 String.Format(
-                    "{0} {1} {2}",
+                    "{0} {1} {2} {3}",
                     Utils.ToFixedWidth(block.Index, BlockChainView.IndexPaddingSize),
                     Utils.ToFixedWidth(block.Hash, BlockChainView.HashPaddingSize),
-                    Utils.ToFixedWidth(block.Miner, BlockChainView.AddressPaddingSize)))
+                    Utils.ToFixedWidth(block.Miner, BlockChainView.AddressPaddingSize),
+                    Utils.ToFixedWidth(block.StateRootHash, BlockChainView.HashPaddingSize)))
             {
                 X = 0,
                 Y = 1,
@@ -198,6 +200,21 @@ namespace Telescope.Gui
                 WordWrap = true,
                 ReadOnly = true, // Disable editing
             };
+
+            // TODO: Add a working shurtcut key
+            contentValue.ContextMenu.MenuItems.Children =
+                contentValue.ContextMenu.MenuItems.Children
+                    .Append(new MenuItem(
+                        "_Inspect",
+                        "",
+                        () =>
+                        {
+                            dialog.RequestStop();
+                            string address = contentValue.SelectedText.ToString() ?? String.Empty;
+                            StateDialog(views, block, address);
+                        }))
+                    .ToArray();
+
             contentFrame.Add(contentValue);
 
             var closeButton = new Button("_Close");
@@ -224,8 +241,8 @@ namespace Telescope.Gui
 
             contentValue.Text = tx.Detail;
             dialog.Add(contextFrame);
+            dialog.Add(contextToggle); // Order here is important for more natural tabbing
             dialog.Add(contentFrame);
-            dialog.Add(contextToggle);
             dialog.AddButton(closeButton);
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);
@@ -495,8 +512,8 @@ namespace Telescope.Gui
 
             contentValue.Text = state.Formatted;
             dialog.Add(contextFrame);
+            dialog.Add(contextToggle); // Order here is important for more natural tabbing
             dialog.Add(contentFrame);
-            dialog.Add(contextToggle);
             dialog.AddButton(closeButton);
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);
