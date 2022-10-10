@@ -1,3 +1,5 @@
+using DiffPlex.DiffBuilder;
+using DiffPlex.DiffBuilder.Model;
 using Libplanet;
 using Terminal.Gui;
 
@@ -24,11 +26,10 @@ namespace Telescope.Gui
 
             var content = new TextView()
             {
-                WordWrap = false,
-                ReadOnly = true,
-
                 Width = Dim.Fill(),
                 Height = 1, // Forces single line
+                WordWrap = false,
+                ReadOnly = true, // Disable editing
                 Text = value,
             };
             var closeButton = new Button("_Close");
@@ -52,6 +53,7 @@ namespace Telescope.Gui
         public static void SearchIndexDialog(Views views)
         {
             var dialog = new Dialog("Index Search", SearchDialogWidth, SearchDialogHeight);
+            var searched = false; // Flag to ignore multiple instructions
 
             var searchText = new Label("Index:")
             {
@@ -69,15 +71,23 @@ namespace Telescope.Gui
             var searchButton = new Button("_Search");
             searchButton.Clicked += () =>
             {
-                dialog.RequestStop();
-                IndexSearchAction(views, searchValue.Text.ToString() ?? String.Empty);
+                if (!searched)
+                {
+                    searched = true;
+                    dialog.RequestStop();
+                    IndexSearchAction(views, searchValue.Text.ToString() ?? String.Empty);
+                }
             };
             searchValue.KeyPress += (keyEventArgs) =>
             {
                 if (keyEventArgs.KeyEvent.Key is Key.Enter)
                 {
-                    dialog.RequestStop();
-                    IndexSearchAction(views, searchValue.Text.ToString() ?? String.Empty);
+                    if (!searched)
+                    {
+                        searched = true;
+                        dialog.RequestStop();
+                        IndexSearchAction(views, searchValue.Text.ToString() ?? String.Empty);
+                    }
                 }
             };
 
@@ -92,6 +102,7 @@ namespace Telescope.Gui
         public static void SearchHashDialog(Views views)
         {
             var dialog = new Dialog("Hash Search", SearchDialogWidth, SearchDialogHeight);
+            var searched = false; // Flag to ignore multiple instructions
 
             var searchText = new Label("Hash:")
             {
@@ -109,15 +120,23 @@ namespace Telescope.Gui
             var searchButton = new Button("_Search");
             searchButton.Clicked += () =>
             {
-                dialog.RequestStop();
-                HashSearchAction(views, searchValue.Text.ToString() ?? String.Empty);
+                if (!searched)
+                {
+                    searched = true;
+                    dialog.RequestStop();
+                    HashSearchAction(views, searchValue.Text.ToString() ?? String.Empty);
+                }
             };
             searchValue.KeyPress += (keyEventArgs) =>
             {
-                if (keyEventArgs.KeyEvent.Key is Key.Enter)
+                if (!searched)
                 {
-                    dialog.RequestStop();
-                    HashSearchAction(views, searchValue.Text.ToString() ?? String.Empty);
+                    searched = true;
+                    if (keyEventArgs.KeyEvent.Key is Key.Enter)
+                    {
+                        dialog.RequestStop();
+                        HashSearchAction(views, searchValue.Text.ToString() ?? String.Empty);
+                    }
                 }
             };
 
@@ -216,7 +235,7 @@ namespace Telescope.Gui
         {
             var dialog = new Dialog("Inspect", InspectDialogWidth, InspectDialogHeight);
 
-            var inspected = false; // Flag to ignore multiple instructions.
+            var inspected = false; // Flag to ignore multiple instructions
             var block = views.BlockChainView.OpenedBlock;
 
             var blockIndexLabel = new Label("Block Index:")
@@ -313,12 +332,12 @@ namespace Telescope.Gui
                 }
                 catch (Exception e)
                 {
-                    _ = MessageBox.ErrorQuery(0, 0, "Error", $"Something went wrong: {e.GetType()}", "Ok");
+                    _ = MessageBox.ErrorQuery("Error", $"Something went wrong: {e.GetType()}", "_Ok");
                 }
             }
             else
             {
-                MessageBox.ErrorQuery(0, 0, "Error", "Please enter an integer", "Ok");
+                _ = MessageBox.ErrorQuery("Error", "Please enter an integer", "_Ok");
             }
         }
 
@@ -335,7 +354,7 @@ namespace Telescope.Gui
             }
             catch (Exception e)
             {
-                _ = MessageBox.ErrorQuery(0, 0, "Error", $"Something went wrong: {e.GetType()}", "Ok");
+                _ = MessageBox.ErrorQuery("Error", $"Something went wrong: {e.GetType()}", "_Ok");
             }
         }
 
@@ -348,7 +367,7 @@ namespace Telescope.Gui
             }
             catch (Exception e)
             {
-                _ = MessageBox.ErrorQuery("Error", $"Failed to fetch state: {e.GetType()}", "Ok");
+                _ = MessageBox.ErrorQuery("Error", $"Failed to fetch state: {e.GetType()}", "_Ok");
                 return;
             }
 
@@ -395,7 +414,7 @@ namespace Telescope.Gui
                 Width = Dim.Fill(),
                 Height = Dim.Fill() - 1, // Buttons take up one line
             };
-            var contentValue = new TextView()
+            var contentValue = new StateView()
             {
                 X = 0,
                 Y = 0,
@@ -421,6 +440,45 @@ namespace Telescope.Gui
             {
                 contentValue.Text = state.Raw;
             };
+            var diffButton = new Button("_Diff");
+            diffButton.Clicked += () =>
+            {
+                try
+                {
+                    // NOTE: Pretty lousy bypass.
+                    var prevBlock = views.BlockChain[(int)(block.Block.Index - 1)] is WrappedBlock pb
+                        ? pb
+                        : throw new ArgumentException("Failed to load previous block.");
+                    var prevState = views.BlockChain.GetState(prevBlock.Hash, address);
+
+                    string PreFix(ChangeType changeType)
+                    {
+                        switch (changeType)
+                        {
+                            case ChangeType.Unchanged:
+                                return "  ";
+                            case ChangeType.Deleted:
+                                return "- ";
+                            case ChangeType.Inserted:
+                                return "+ ";
+                            default:
+                                return "? ";
+                        }
+                    }
+
+                    var diffModel = InlineDiffBuilder.Diff(prevState.Formatted, state.Formatted);
+                    var diff = String.Join(
+                        Environment.NewLine,
+                        diffModel.Lines.Select(line => PreFix(line.Type) + line.Text));
+
+                    contentValue.Text = diff;
+                }
+                catch (Exception e)
+                {
+                    _ = MessageBox.ErrorQuery("Error", $"Something went wrong: {e.GetType()}", "_Ok");
+                    contentValue.Text = "Error";
+                }
+            };
             var copyButton = new Button("Cop_y");
             copyButton.Clicked += () =>
             {
@@ -434,6 +492,7 @@ namespace Telescope.Gui
             dialog.AddButton(closeButton);
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);
+            dialog.AddButton(diffButton);
             dialog.AddButton(copyButton);
             closeButton.SetFocus();
 
