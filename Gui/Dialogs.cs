@@ -219,9 +219,13 @@ namespace Telescope.Gui
                 MessageBox.Query("Copy", "Content copied to clipboard.", "_Close");
             };
 
+            var contextToggle = new ToggleLabel(contextFrame, contentFrame);
+            contextToggle.Clicked += () => contextToggle.ToggleFrames();
+
             contentValue.Text = tx.Detail;
             dialog.Add(contextFrame);
             dialog.Add(contentFrame);
+            dialog.Add(contextToggle);
             dialog.AddButton(closeButton);
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);
@@ -486,9 +490,13 @@ namespace Telescope.Gui
                 MessageBox.Query("Copy", "Content copied to clipboard.", "_Close");
             };
 
+            var contextToggle = new ToggleLabel(contextFrame, contentFrame);
+            contextToggle.Clicked += () => contextToggle.ToggleFrames();
+
             contentValue.Text = state.Formatted;
             dialog.Add(contextFrame);
             dialog.Add(contentFrame);
+            dialog.Add(contextToggle);
             dialog.AddButton(closeButton);
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);
