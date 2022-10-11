@@ -214,8 +214,8 @@ namespace Telescope.Gui
                             StateDialog(views, block, address);
                         }))
                     .ToArray();
-
             contentFrame.Add(contentValue);
+            AttachScrollBar(contentValue); // Needs to be attached after super view is set for hosting view
 
             var closeButton = new Button("_Close");
             closeButton.Clicked += () => dialog.RequestStop();
@@ -445,6 +445,7 @@ namespace Telescope.Gui
                 ReadOnly = true, // Disable editing
             };
             contentFrame.Add(contentValue);
+            AttachScrollBar(contentValue); // Needs to be attached after super view is set for hosting view
 
             var closeButton = new Button("_Close");
             closeButton.Clicked += () =>
@@ -522,6 +523,27 @@ namespace Telescope.Gui
             closeButton.SetFocus();
 
             Application.Run(dialog);
+        }
+
+        // NOTE: Mostly copy pasted from Terminal.Gui/UICatalog/Scenarios
+        private static void AttachScrollBar(TextView textView)
+        {
+			var scrollBar = new ScrollBarView(textView, true);
+			scrollBar.ChangedPosition += () =>
+            {
+				textView.TopRow = scrollBar.Position;
+				if (textView.TopRow != scrollBar.Position) {
+					scrollBar.Position = textView.TopRow;
+				}
+				textView.SetNeedsDisplay ();
+			};
+            textView.DrawContent += (e) =>
+            {
+                scrollBar.Size = textView.Lines;
+                scrollBar.Position = textView.TopRow;
+                scrollBar.LayoutSubviews();
+                scrollBar.Refresh();
+            };
         }
     }
 }
