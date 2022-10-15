@@ -1,9 +1,12 @@
 using System.Text.RegularExpressions;
+using Libplanet;
 
 namespace Telescope
 {
     public class WrappedState
     {
+        private static Bencodex.Codec _codec = new Bencodex.Codec();
+
         private Bencodex.Types.IValue _state;
 
         public WrappedState(Bencodex.Types.IValue state)
@@ -25,5 +28,7 @@ namespace Telescope
         }
 
         public string Raw => _state is { } state ? _state.ToString() ?? "null" : "null";
+
+        public string Hex => _state is { } state ? ByteUtil.Hex(_codec.Encode(_state)) : string.Empty;
     }
 }

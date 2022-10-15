@@ -229,6 +229,11 @@ namespace Telescope.Gui
             {
                 contentValue.Text = tx.Raw;
             };
+            var hexButton = new Button("_Hex");
+            hexButton.Clicked += () =>
+            {
+                contentValue.Text = tx.Hex;
+            };
             var copyButton = new Button("Cop_y");
             copyButton.Clicked += () =>
             {
@@ -246,6 +251,7 @@ namespace Telescope.Gui
             dialog.AddButton(closeButton);
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);
+            dialog.AddButton(hexButton);
             dialog.AddButton(copyButton);
             closeButton.SetFocus();
 
@@ -462,6 +468,11 @@ namespace Telescope.Gui
             {
                 contentValue.Text = state.Raw;
             };
+            var hexButton = new Button("_Hex");
+            hexButton.Clicked += () =>
+            {
+                contentValue.Text = state.Hex;
+            };
             var diffButton = new Button("_Diff");
             diffButton.Clicked += () =>
             {
@@ -518,6 +529,7 @@ namespace Telescope.Gui
             dialog.AddButton(closeButton);
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);
+            dialog.AddButton(hexButton);
             dialog.AddButton(diffButton);
             dialog.AddButton(copyButton);
             closeButton.SetFocus();

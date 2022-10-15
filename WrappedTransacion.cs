@@ -13,6 +13,7 @@ namespace Telescope
     /// </summary>
     public class WrappedTransaction
     {
+        private static Bencodex.Codec _codec = new Bencodex.Codec();
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ff";
         private Transaction<MockAction> _tx;
 
@@ -66,6 +67,8 @@ namespace Telescope
         /// A raw <see cref="Bencodex.Types.Dictionary"/> format converted to a <see cref="string"/>.
         /// </summary>
         public string Raw => Tx.ToBencodex(true).ToString();
+
+        public string Hex => ByteUtil.Hex(_codec.Encode(Tx.ToBencodex(true)));
 
         public string Id => Tx.Id.ToString();
 
