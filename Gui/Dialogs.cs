@@ -353,7 +353,7 @@ namespace Telescope.Gui
 
         public static void IndexSearchAction(Views views, string searchIndex)
         {
-            var result = Int64.TryParse(searchIndex, out long index);
+            var result = long.TryParse(searchIndex, out var index);
             if (result)
             {
                 try
