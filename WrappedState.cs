@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Libplanet;
 
@@ -30,5 +32,26 @@ namespace Telescope
         public string Raw => _state is { } state ? _state.ToString() ?? "null" : "null";
 
         public string Hex => _state is { } state ? ByteUtil.Hex(_codec.Encode(_state)) : string.Empty;
+
+        public string Json
+        {
+            get
+            {
+                if (_state is not { } state)
+                {
+                    return string.Empty;
+                }
+
+                var stream = new MemoryStream();
+                var options = new JsonWriterOptions {
+                    Indented = true,
+                };
+                var writer = new Utf8JsonWriter(stream, options);
+                var converter = new Bencodex.Json.BencodexJsonConverter();
+                converter.Write(writer, state, new JsonSerializerOptions());
+
+                return Encoding.UTF8.GetString(stream.ToArray());
+            }
+        }
     }
 }

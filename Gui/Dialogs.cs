@@ -479,6 +479,11 @@ namespace Telescope.Gui
             {
                 contentValue.Text = state.Hex;
             };
+            var jsonButton = new Button("_Json");
+            jsonButton.Clicked += () =>
+            {
+                contentValue.Text = state.Json;
+            };
             var diffButton = new Button("_Diff");
             diffButton.Clicked += () =>
             {
@@ -536,6 +541,7 @@ namespace Telescope.Gui
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);
             dialog.AddButton(hexButton);
+            dialog.AddButton(jsonButton);
             dialog.AddButton(diffButton);
             dialog.AddButton(copyButton);
             closeButton.SetFocus();
