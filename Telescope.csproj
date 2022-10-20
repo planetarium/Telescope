@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bencodex" Version="0.4.0" />
+    <PackageReference Include="Bencodex" Version="0.7.0-dev.20220923062845" />
     <PackageReference Include="Cocona.Lite" Version="2.0.3" />
     <PackageReference Include="DiffPlex" Version="1.7.1" />
-    <PackageReference Include="Libplanet" Version="0.40.3" />
-    <PackageReference Include="Libplanet.RocksDBStore" Version="0.40.3" />
+    <PackageReference Include="Libplanet" Version="0.43.1" />
+    <PackageReference Include="Libplanet.RocksDBStore" Version="0.43.1" />
     <PackageReference Include="Terminal.Gui" Version="1.8.2" />
   </ItemGroup>
 
