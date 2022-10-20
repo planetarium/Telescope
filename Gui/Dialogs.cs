@@ -234,6 +234,11 @@ namespace Telescope.Gui
             {
                 contentValue.Text = tx.Hex;
             };
+            var jsonButton = new Button("_Json");
+            jsonButton.Clicked += () =>
+            {
+                contentValue.Text = tx.Json;
+            };
             var copyButton = new Button("Cop_y");
             copyButton.Clicked += () =>
             {
@@ -252,6 +257,7 @@ namespace Telescope.Gui
             dialog.AddButton(formattedButton);
             dialog.AddButton(rawButton);
             dialog.AddButton(hexButton);
+            dialog.AddButton(jsonButton);
             dialog.AddButton(copyButton);
             closeButton.SetFocus();
 
