@@ -17,7 +17,9 @@ namespace Telescope
 
         public void Run(
             [Option('p', Description = "Path to chain storage with its scheme specified.")]
-            string path)
+            string path,
+            [Option('i', Description = "Index of the block to show.")]
+            long blockIndex = 0)
         {
             Uri uri = new Uri($"{path}");
 
@@ -29,6 +31,10 @@ namespace Telescope
             Views views = new Views(blockChain);
             Menus menus = new Menus(views);
             views.TopView.Add(menus.MenuBar);
+            if (blockIndex != 0)
+            {
+                Dialogs.IndexSearchAction(views, blockIndex.ToString());    
+            }
 
             Application.Run(views.TopView);
             Application.Shutdown();
