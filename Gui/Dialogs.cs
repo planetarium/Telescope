@@ -129,11 +129,11 @@ namespace Telescope.Gui
             };
             searchValue.KeyPress += (keyEventArgs) =>
             {
-                if (!searched)
+                if (keyEventArgs.KeyEvent.Key is Key.Enter)
                 {
-                    searched = true;
-                    if (keyEventArgs.KeyEvent.Key is Key.Enter)
+                    if (!searched)
                     {
+                        searched = true;
                         dialog.RequestStop();
                         HashSearchAction(views, searchValue.Text.ToString() ?? String.Empty);
                     }
