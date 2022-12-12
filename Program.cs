@@ -33,7 +33,7 @@ namespace Telescope
             views.TopView.Add(menus.MenuBar);
             if (blockIndex is { } bi)
             {
-                Dialogs.IndexSearchAction(views, bi.ToString());    
+                Dialogs.IndexSearchAction(views, bi.ToString());
             }
 
             Application.Run(views.TopView);
@@ -64,7 +64,9 @@ namespace Telescope
 
         private WrappedBlockChain LoadBlockChain(IStore store, IStateStore stateStore)
         {
-            Block<MockAction> genesis = store.GetCanonicalGenesisBlock<MockAction>();
+            Block<MockAction> genesis = store.GetCanonicalGenesisBlock<MockAction>()
+                ?? throw new NullReferenceException(
+                    $"Failed to load genesis block from {nameof(store)}");
 
             var blockChain = new BlockChain<MockAction>(
                 policy: new Libplanet.Blockchain.Policies.BlockPolicy<MockAction>(),
