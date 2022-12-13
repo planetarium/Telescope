@@ -22,7 +22,7 @@ namespace Telescope.Gui
 
         protected override void SetReadOnlyColor(List<Rune> line, int idx)
         {
-			Terminal.Gui.Attribute attribute;
+            Terminal.Gui.Attribute attribute;
             Color background = ColorScheme.Focus.Background;
 
             ustring nullPhrase = "Null";
@@ -39,13 +39,13 @@ namespace Telescope.Gui
             }
             else if (ColorScheme.Disabled.Foreground == background)
             {
-				attribute = new Terminal.Gui.Attribute (ColorScheme.Focus.Foreground, background);
-			}
+                attribute = new Terminal.Gui.Attribute (ColorScheme.Focus.Foreground, background);
+            }
             else
             {
-				attribute = new Terminal.Gui.Attribute (ColorScheme.Disabled.Foreground, background);
-			}
-			Driver.SetAttribute (attribute);
+                attribute = new Terminal.Gui.Attribute (ColorScheme.Disabled.Foreground, background);
+            }
+            Driver.SetAttribute (attribute);
         }
     }
 }
