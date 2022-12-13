@@ -18,11 +18,10 @@ namespace Telescope
         public const int MinerItemIndex = 4;
         public const int PublicKeyIndex = 5;
         public const int TxHashIndex = 6;
-        public const int NonceIndex = 7;
-        public const int PreEvaluationHashIndex = 8;
-        public const int TransactionsCountIndex = 9;
-        public const int StateRootHashIndex = 10;
-        public const int SignatureIndex = 11;
+        public const int PreEvaluationHashIndex = 7;
+        public const int TransactionsCountIndex = 8;
+        public const int StateRootHashIndex = 9;
+        public const int SignatureIndex = 10;
 
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ff";
         private Block<MockAction> _block;
@@ -98,10 +97,6 @@ namespace Telescope
                 value = TxHash;
                 lines.Add(
                     $"{Utils.ToFixedWidth(label, BlockView.LabelPaddingSize)} {value}");
-                label = "Nonce:";
-                value = Nonce;
-                lines.Add(
-                    $"{Utils.ToFixedWidth(label, BlockView.LabelPaddingSize)} {value}");
                 label = "Pre-Evaluation Hash:";
                 value = PreEvaluationHash;
                 lines.Add(
@@ -116,6 +111,10 @@ namespace Telescope
                     $"{Utils.ToFixedWidth(label, BlockView.LabelPaddingSize)} {value}");
                 label = "Signature:";
                 value = Signature;
+                lines.Add(
+                    $"{Utils.ToFixedWidth(label, BlockView.LabelPaddingSize)} {value}");
+                label = "LastCommit:";
+                value = LastCommit;
                 lines.Add(
                     $"{Utils.ToFixedWidth(label, BlockView.LabelPaddingSize)} {value}");
                 return lines;
@@ -136,14 +135,14 @@ namespace Telescope
 
         public string TxHash => Block.TxHash is { } txHash ? txHash.ToString() : "null";
 
-        public string Nonce => Block.Nonce.ToString();
-
-        public string PreEvaluationHash => ByteUtil.Hex(Block.PreEvaluationHash);
+        public string PreEvaluationHash => Block.PreEvaluationHash.ToString();
 
         public string TransactionsCount => Block.Transactions.Count.ToString();
 
         public string StateRootHash => Block.StateRootHash.ToString();
 
         public string Signature => Block.Signature is { } signature ? ByteUtil.Hex(signature) : "null";
+
+        public string LastCommit => Block.LastCommit is { } commit ? commit.ToString() : "null";
     }
 }
