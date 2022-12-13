@@ -11,6 +11,7 @@ namespace Telescope.Gui
             WrappedBlock.PublicKeyIndex,
             WrappedBlock.StateRootHashIndex,
             WrappedBlock.SignatureIndex,
+            WrappedBlock.LastCommitIndex,
         };
 
         public const int LabelPaddingSize = 20;
@@ -75,6 +76,9 @@ namespace Telescope.Gui
                     break;
                 case WrappedBlock.SignatureIndex:
                     Dialogs.CopyDialog("Signautre", _block.Signature);
+                    break;
+                case WrappedBlock.LastCommitIndex:
+                    Dialogs.LastCommitDialog(_block);
                     break;
                 default:
                     break;

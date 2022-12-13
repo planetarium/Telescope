@@ -1,6 +1,7 @@
 using System.Globalization;
 using Libplanet;
 using Libplanet.Blocks;
+using Libplanet.Consensus;
 using Telescope.Gui;
 
 namespace Telescope
@@ -22,6 +23,7 @@ namespace Telescope
         public const int TransactionsCountIndex = 8;
         public const int StateRootHashIndex = 9;
         public const int SignatureIndex = 10;
+        public const int LastCommitIndex = 11;
 
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ff";
         private Block<MockAction> _block;
@@ -143,6 +145,13 @@ namespace Telescope
 
         public string Signature => Block.Signature is { } signature ? ByteUtil.Hex(signature) : "null";
 
-        public string LastCommit => Block.LastCommit is { } commit ? commit.ToString() : "null";
+        public string LastCommit => Block.LastCommit is { } commit ? FormatBlockCommit(commit) : "null";
+
+        private static string FormatBlockCommit(BlockCommit commit)
+        {
+            return
+                $"Round: {commit.Round}, " +
+                $"Count: {commit.Votes.Where(vote => vote.Flag == VoteFlag.PreCommit).Count()}/{commit.Votes.Length}";
+        }
     }
 }
