@@ -1,6 +1,7 @@
 using System.Globalization;
 using Libplanet;
 using Libplanet.Blocks;
+using Libplanet.Consensus;
 using Telescope.Gui;
 
 namespace Telescope
@@ -143,6 +144,8 @@ namespace Telescope
 
         public string Signature => Block.Signature is { } signature ? ByteUtil.Hex(signature) : "null";
 
-        public string LastCommit => Block.LastCommit is { } commit ? commit.ToString() : "null";
+        public string LastCommit => Block.LastCommit is { } commit
+            ? $"{commit.Votes.Where(vote => vote.Flag == VoteFlag.PreCommit).Count()}/{commit.Votes.Length}"
+            : "null";
     }
 }
