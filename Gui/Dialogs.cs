@@ -67,7 +67,7 @@ namespace Telescope.Gui
                 text += $"Votes:";
                 foreach (var vote in lastCommit.Votes)
                 {
-                    text += $"\n- PublicKey: {vote.Validator}, Flag: {vote.Flag}";
+                    text += $"\n- PublicKey: {vote.ValidatorPublicKey}, Flag: {vote.Flag}";
                 }
             }
             else

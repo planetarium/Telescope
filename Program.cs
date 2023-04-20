@@ -64,9 +64,14 @@ namespace Telescope
 
         private WrappedBlockChain LoadBlockChain(IStore store, IStateStore stateStore)
         {
-            Block<MockAction> genesis = store.GetCanonicalGenesisBlock<MockAction>()
+            Guid canon = store.GetCanonicalChainId()
+                ?? throw new NullReferenceException(
+                    $"Failed to load canonical chain from {nameof(store)}");
+
+            BlockHash genesisHash = store.IndexBlockHash(canon, 0)
                 ?? throw new NullReferenceException(
                     $"Failed to load genesis block from {nameof(store)}");
+            Block<MockAction> genesis = store.GetBlock<MockAction>(genesisHash);
 
             var blockChain = new BlockChain<MockAction>(
                 policy: new Libplanet.Blockchain.Policies.BlockPolicy<MockAction>(),
