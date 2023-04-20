@@ -68,9 +68,9 @@ namespace Telescope
         /// <summary>
         /// A raw <see cref="Bencodex.Types.Dictionary"/> format converted to a <see cref="string"/>.
         /// </summary>
-        public string Raw => Tx.ToBencodex(true).ToString();
+        public string Raw => Tx.MarshalTransaction().ToString();
 
-        public string Hex => ByteUtil.Hex(_codec.Encode(Tx.ToBencodex(true)));
+        public string Hex => ByteUtil.Hex(Tx.Serialize());
 
         public string Json
         {
@@ -87,7 +87,7 @@ namespace Telescope
                 };
                 var writer = new Utf8JsonWriter(stream, options);
                 var converter = new Bencodex.Json.BencodexJsonConverter();
-                converter.Write(writer, tx.ToBencodex(true), new JsonSerializerOptions());
+                converter.Write(writer, tx.MarshalTransaction(), new JsonSerializerOptions());
 
                 return Encoding.UTF8.GetString(stream.ToArray());
             }

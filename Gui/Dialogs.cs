@@ -1,6 +1,7 @@
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
 using Libplanet;
+using Libplanet.Blocks;
 using Terminal.Gui;
 
 namespace Telescope.Gui
@@ -45,6 +46,49 @@ namespace Telescope.Gui
             dialog.Add(content);
             dialog.AddButton(closeButton);
             dialog.AddButton(copyButton);
+            closeButton.SetFocus();
+            Application.Run(dialog);
+            return;
+        }
+
+        public static void LastCommitDialog(WrappedBlock block)
+        {
+            var dialog = new Dialog("LastCommit")
+            {
+                Width = Dim.Fill() - 4, // Some margins
+            };
+
+            string text = "";
+            if (block.Block.LastCommit is { } lastCommit)
+            {
+                text += $"BlockHash: {lastCommit.BlockHash}\n";
+                text += $"Height: {lastCommit.Height}\n";
+                text += $"Round: {lastCommit.Round}\n";
+                text += $"Votes:";
+                foreach (var vote in lastCommit.Votes)
+                {
+                    text += $"\n- PublicKey: {vote.ValidatorPublicKey}, Flag: {vote.Flag}";
+                }
+            }
+            else
+            {
+                text += "null";
+            }
+
+            var content = new BlockCommitView()
+            {
+                Width = Dim.Fill(),
+                Height = Dim.Fill() - 2, // Accounts for the close button
+                WordWrap = false,
+                ReadOnly = true, // Disable editing
+                Text = text,
+            };
+
+            var closeButton = new Button("_Close");
+            closeButton.Clicked += () => dialog.RequestStop();
+
+            dialog.Add(content);
+            dialog.AddButton(closeButton);
             closeButton.SetFocus();
             Application.Run(dialog);
             return;

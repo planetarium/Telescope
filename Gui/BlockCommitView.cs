@@ -1,20 +1,21 @@
 using Terminal.Gui;
 using Rune = System.Rune;
+using NStack;
 
 namespace Telescope.Gui
 {
     /// <summary>
-    /// Custom <see cref="TextView"/> for viewing states to support
-    /// colored diffs.
+    /// Custom <see cref="TextView"/> for viewing block commits to support
+    /// coloring for vote flags.
     /// </summary>
-    public class StateView : TextView
+    public class BlockCommitView : TextView
     {
-        public StateView()
+        public BlockCommitView()
             : base()
         {
         }
 
-        public StateView(Rect frame)
+        public BlockCommitView(Rect frame)
             : base(frame)
         {
         }
@@ -24,17 +25,21 @@ namespace Telescope.Gui
             Terminal.Gui.Attribute attribute;
             Color background = ColorScheme.Focus.Background;
 
-            if (line.FirstOrDefault().Value == (uint)'-')
+            ustring nullPhrase = "Null";
+            ustring preCommitPhrase = "PreCommit";
+            ustring lineStr = ustring.Make(line);
+
+            if (lineStr.Contains(nullPhrase))
             {
                 attribute = new Terminal.Gui.Attribute (Color.BrightRed, background);
             }
-            else if (line.FirstOrDefault().Value == (uint)'+')
+            else if (lineStr.Contains(preCommitPhrase))
             {
                 attribute = new Terminal.Gui.Attribute (Color.BrightGreen, background);
             }
             else if (ColorScheme.Disabled.Foreground == background)
             {
-				attribute = new Terminal.Gui.Attribute (ColorScheme.Focus.Foreground, background);
+                attribute = new Terminal.Gui.Attribute (ColorScheme.Focus.Foreground, background);
             }
             else
             {
