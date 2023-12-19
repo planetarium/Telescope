@@ -1,7 +1,6 @@
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
-using Libplanet;
-using Libplanet.Blocks;
+using Libplanet.Common;
 using Terminal.Gui;
 
 namespace Telescope.Gui

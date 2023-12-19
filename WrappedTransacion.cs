@@ -2,9 +2,10 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using Libplanet;
+using Bencodex.Types;
 using Libplanet.Action;
-using Libplanet.Tx;
+using Libplanet.Common;
+using Libplanet.Types.Tx;
 using Telescope.Gui;
 
 namespace Telescope
@@ -17,14 +18,14 @@ namespace Telescope
     {
         private static Bencodex.Codec _codec = new Bencodex.Codec();
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ff";
-        private Transaction<MockAction> _tx;
+        private Transaction _tx;
 
-        public WrappedTransaction(Transaction<MockAction> tx)
+        public WrappedTransaction(Transaction tx)
         {
             _tx = tx;
         }
 
-        public Transaction<MockAction> Tx => _tx;
+        public Transaction Tx => _tx;
 
         public override string ToString() => Summary;
 
@@ -127,19 +128,7 @@ namespace Telescope
         {
             get
             {
-                List<IAction> actions = new List<IAction>();
-                if (Tx.SystemAction is { } systemAction)
-                {
-                    actions.Add(systemAction);
-                }
-
-                if (Tx.CustomActions is { } customActions)
-                {
-                    foreach(var customAction in customActions)
-                    {
-                        actions.Add(customAction);
-                    }
-                }
+                List<IValue> actions = Tx.Actions.Select(action => action).ToList();
 
                 if (actions.Count == 0)
                 {
@@ -156,9 +145,9 @@ namespace Telescope
         }
 
         // FIXME: Use pre-compiled regex for optimization.
-        private static string FormattedAction(IAction action)
+        private static string FormattedAction(IValue? plainValue)
         {
-            string formatted = action.PlainValue.ToString() ?? "null";
+            string formatted = plainValue?.ToString() ?? "null";
             formatted = Regex.Replace(formatted, @"^Bencodex\S* ", "  "); // Remove type description; spacing
             formatted = Regex.Replace(formatted, "\n", "\n  "); // Spacing
             formatted = Regex.Replace(formatted, " b\"", " \""); // Remove byte string prefix

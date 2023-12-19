@@ -1,17 +1,17 @@
 using System.Collections;
-using Libplanet;
 using Libplanet.Blockchain;
-using Libplanet.Blocks;
-using Bencodex;
+using Libplanet.Common;
+using Libplanet.Crypto;
+using Libplanet.Types.Blocks;
 
 namespace Telescope
 {
     public class WrappedBlockChain : IList
     {
-        private BlockChain<MockAction> _blockChain;
+        private BlockChain _blockChain;
         private object _syncRoot;
 
-        public WrappedBlockChain(BlockChain<MockAction> blockChain)
+        public WrappedBlockChain(BlockChain blockChain)
         {
             _blockChain = blockChain;
             _syncRoot = new object();
