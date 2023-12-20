@@ -1,7 +1,7 @@
 using System.Globalization;
-using Libplanet;
-using Libplanet.Blocks;
-using Libplanet.Consensus;
+using Libplanet.Common;
+using Libplanet.Types.Blocks;
+using Libplanet.Types.Consensus;
 using Telescope.Gui;
 
 namespace Telescope
@@ -26,9 +26,9 @@ namespace Telescope
         public const int LastCommitIndex = 11;
 
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ff";
-        private Block<MockAction> _block;
+        private Block _block;
 
-        public WrappedBlock(Block<MockAction> block)
+        public WrappedBlock(Block block)
         {
             _block = block;
         }
@@ -46,7 +46,7 @@ namespace Telescope
                 Utils.ToFixedWidth("Miner", BlockChainView.AddressPaddingSize),
                 "Txs");
 
-        public Block<MockAction> Block => _block;
+        public Block Block => _block;
 
         public List<WrappedTransaction> Transactions => _block.Transactions.Select(tx => new WrappedTransaction(tx)).ToList();
 

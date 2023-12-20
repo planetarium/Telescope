@@ -1,5 +1,6 @@
 using Bencodex.Types;
 using Libplanet.Action;
+using Libplanet.Action.State;
 
 namespace Telescope
 {
@@ -16,14 +17,14 @@ namespace Telescope
             PlainValue = Bencodex.Types.Null.Value;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IAction.LoadPlainValue"/>
         public void LoadPlainValue(IValue plainValue)
         {
             PlainValue = plainValue;
         }
 
-        /// <inheritdoc/>
-        public IAccountStateDelta Execute(IActionContext context)
+        /// <inheritdoc cref="IAction.Execute/>
+        public IAccount Execute(IActionContext context)
         {
             throw new InvalidOperationException("Execution is not allowed.");
         }

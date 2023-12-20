@@ -1,8 +1,11 @@
 ﻿using Cocona;
+using Libplanet.Action;
+using Libplanet.Action.Loader;
+using Libplanet.Action.State;
 using Libplanet.Blockchain;
-using Libplanet.Blocks;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
+using Libplanet.Types.Blocks;
 using Telescope.Gui;
 using Terminal.Gui;
 
@@ -71,14 +74,22 @@ namespace Telescope
             BlockHash genesisHash = store.IndexBlockHash(canon, 0)
                 ?? throw new NullReferenceException(
                     $"Failed to load genesis block from {nameof(store)}");
-            Block<MockAction> genesis = store.GetBlock<MockAction>(genesisHash);
+            Block genesis = store.GetBlock(genesisHash);
+            IBlockChainStates blockChainStates = new BlockChainStates(store, stateStore);
+            IActionLoader actionLoader = new SingleActionLoader(typeof(MockAction));
+            IActionEvaluator actionEvaluator = new ActionEvaluator(
+                policyBlockActionGetter: _ => null,
+                stateStore: stateStore,
+                actionTypeLoader: actionLoader);
 
-            var blockChain = new BlockChain<MockAction>(
-                policy: new Libplanet.Blockchain.Policies.BlockPolicy<MockAction>(),
-                stagePolicy: new Libplanet.Blockchain.Policies.VolatileStagePolicy<MockAction>(),
+            var blockChain = new BlockChain(
+                policy: new Libplanet.Blockchain.Policies.BlockPolicy(),
+                stagePolicy: new Libplanet.Blockchain.Policies.VolatileStagePolicy(),
                 store: store,
                 stateStore: stateStore,
-                genesisBlock: genesis);
+                genesisBlock: genesis,
+                blockChainStates: blockChainStates,
+                actionEvaluator: actionEvaluator);
             return new WrappedBlockChain(blockChain);
         }
     }

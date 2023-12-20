@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bencodex" Version="0.9.0" />
-    <PackageReference Include="Bencodex.Json" Version="0.9.0" />
+    <PackageReference Include="Bencodex" Version="0.16.0" />
+    <PackageReference Include="Bencodex.Json" Version="0.16.0" />
     <PackageReference Include="Cocona.Lite" Version="2.0.3" />
     <PackageReference Include="DiffPlex" Version="1.7.1" />
     <PackageReference Include="Terminal.Gui" Version="1.8.2" />
