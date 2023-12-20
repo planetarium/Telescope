@@ -62,6 +62,8 @@ namespace Telescope
                     $"Public Key: {PublicKey}\n" +
                     $"Signature: {Signature}\n" +
                     $"Updated Addresses: {UpdatedAddresses}\n" +
+                    $"Max Gas Price: {MaxGasPrice}\n" +
+                    $"Gas Limit: {GasLimit}\n" +
                     $"Actions: {Actions}";
             }
         }
@@ -123,6 +125,14 @@ namespace Telescope
                 }
             }
         }
+
+        public string MaxGasPrice => Tx.MaxGasPrice is { } maxGasPrice
+            ? $"{maxGasPrice}"
+            : "null";
+
+        public string GasLimit => Tx.GasLimit is { } gasLimit
+            ? $"{gasLimit}"
+            : "null";
 
         public string Actions
         {
