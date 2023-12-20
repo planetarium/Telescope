@@ -55,7 +55,7 @@ namespace Telescope
         public bool Contains(object? obj) => throw new NotImplementedException("Checking containment is not allowed.");
 
         // FIXME: Forced casting due to IList.
-        public int Count => (int)_blockChain.Tip.Index;
+        public int Count => (int)_blockChain.Count;
 
         public void CopyTo(Array objs, int count) => throw new NotImplementedException("Copying is not allowed.");
 
