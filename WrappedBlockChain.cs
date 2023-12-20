@@ -80,5 +80,20 @@ namespace Telescope
                 ? new WrappedState(s)
                 : throw new NullReferenceException("Failed to fetch state.");
         }
+
+        public bool HasState(long index)
+        {
+            // NOTE: Better way would be to check ITrie.Recroded, but
+            // BlockChain does not allow direct access to IStateStore.
+            try
+            {
+                _ = _blockChain.GetAccountState(_blockChain[index].StateRootHash);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
