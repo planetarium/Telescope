@@ -12,6 +12,7 @@ namespace Telescope.Gui
         private BlockView _blockView;
         private TransactionsView _transactionsView;
         private WrappedBlock _openedBlock;
+        private long _stateStartingIndex;
 
         /// <summary>
         /// Creates a <see cref="BlockChainView"/> instance displaying a list of <see cref="WrappedBlock"/>s
@@ -29,6 +30,7 @@ namespace Telescope.Gui
             _openedBlock = blockChain[0] is WrappedBlock block
                 ? block
                 : throw new ArgumentException("Failed to load genesis block.");
+            _stateStartingIndex = BinarySearchFirstExistingState(blockChain);
 
             // NOTE: Using the raw explicit setter instead of calling base constructor
             // to bypass iterating over all indices.
@@ -58,5 +60,51 @@ namespace Telescope.Gui
         /// with <see cref="ListView.SelectedItem"/>.
         /// </summary>
         public WrappedBlock OpenedBlock => _openedBlock;
+
+        public override void OnRowRender(ListViewRowEventArgs rowEventArgs)
+        {
+            // TODO: Check colors on other terminals.
+            if (rowEventArgs.Row < _stateStartingIndex)
+            {
+                rowEventArgs.RowAttribute = SelectedItem == rowEventArgs.Row
+                    ? Terminal.Gui.Attribute.Make(
+                        foreground: Color.Black,
+                        background: Color.DarkGray)
+                    : Terminal.Gui.Attribute.Make(
+                        foreground: Color.Gray,
+                        background: Color.Blue);
+            }
+            else
+            {
+                base.OnRowRender(rowEventArgs);
+            }
+        }
+
+        // This assumes a block having a state must come after
+        // a block not having a state.
+        private long BinarySearchFirstExistingState(WrappedBlockChain blockChain)
+        {
+            long low = 0;
+            long high = blockChain.Count - 1;
+
+            while (low < high)
+            {
+                long median = (low + high) / 2;
+                if (blockChain.HasState(median))
+                {
+                    high = median - 1;
+                }
+                else
+                {
+                    low = median + 1;
+                }
+            }
+
+            // Note: Check if existing state is actually found.
+            // If not, return count, which is 1 higher than the tip index.
+            return blockChain.HasState(low)
+                ? low
+                : blockChain.Count;
+        }
     }
 }
